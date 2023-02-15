@@ -36,6 +36,8 @@ const notValidProduct = {
   price: 100,
 };
 
+let validId;
+
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URL_TEST);
   const product = new ProductsModel({
@@ -44,6 +46,7 @@ beforeAll(async () => {
     price: 20,
   });
   await product.save();
+  validId = product._id;
 });
 // beforeAll is a Jest hook ran before all the tests, usually it is used to connect to the db and to do some initial setup (like inserting some mock data in the db)
 
@@ -75,28 +78,30 @@ describe("Test APIs", () => {
     await client.post("/products").send(notValidProduct).expect(400);
   });
 
-  // it("Should test that GET / products/:productId with an existing id returns the product that matched the id form params", async () => {
-  //   const products = await client.get("/products");
-  //   const validProductId = products[0]._id;
-  //   const response = await client.get(`products/${validProductId}`).expect(200);
-  //   expect(response.body._id).toEqual(validProductId.toString());
-  // });
+  it("Should test that GET / products/:productId with an existing id returns the product that matched the id from params", async () => {
+    // const products = await client.get("/products");
+    // const validProductId = products[0]._id;
+    console.log(validId.toString());
+    const response = await client
+      .get(`/products/${validId.toString()}`)
+      .expect(200);
+    console.log(response.name);
+    // expect(response.body._id).toEqual(validId.toString());
+  });
 
   it("Should test that GET /:productId with a not valid id to return 404", async () => {
     // const product = await client.get("products/12345445723421321");
-    await client.get("products/12345445723421321").expect(404);
+    await client.get("/products/12345678912345678912345").expect(404);
     // expect(product).toEqual(404);
   });
 
-  if (
-    ("Should test that PUT /:productId ",
-    async () => {
-      const originalResponse = await client.get(`products/${validId}`);
-      const response = await client
-        .put(`/products/${validId}`)
-        .send({ name: "edited" })
-        .expect(200);
-      expect(response.body.name !== originalResponse.body.name);
-    })
-  );
+  it("Should test that PUT /:productId ", async () => {
+    const originalResponse = await client.get(`/products/${validId}`);
+    const response = await client
+      .put(`/products/${validId}`)
+      .send({ name: "edited" })
+      .expect(200);
+    expect(response.body.name).toBe("edited");
+    expect(response.body.name !== originalResponse.body.name);
+  });
 });

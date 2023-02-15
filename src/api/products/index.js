@@ -24,12 +24,33 @@ productsRouter.post("/", async (req, res, next) => {
 });
 
 productsRouter.get("/:productId", async (req, res, next) => {
+  console.log("----------------test");
   try {
     const product = await ProductsModel.findById(req.params.productId);
     if (product) {
       res.send(product);
     } else {
       next(createHttpError(404, "Product with the given id not found"));
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+productsRouter.put("/:productId", async (req, res, next) => {
+  try {
+    const searchedProduct = await ProductsModel.findById(req.params.productId);
+
+    if (searchedProduct) {
+      const updatedProducts = await ProductsModel.findByIdAndUpdate(
+        req.params.productId, // WHO you want to modify
+        req.body, // HOW you want to modify
+        { new: true, runValidators: true }
+      );
+
+      res.send(updatedProducts);
+    } else {
+      next(createHttpError(404, `the searched products, doesn't exist`));
     }
   } catch (error) {
     next(error);
