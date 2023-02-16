@@ -28,8 +28,12 @@ productsRouter.get("/:productId", async (req, res, next) => {
   try {
     const product = await ProductsModel.findById(req.params.productId);
     if (product) {
+      console.log("1");
+      console.log(product);
       res.send(product);
     } else {
+      console.log("2");
+
       next(createHttpError(404, "Product with the given id not found"));
     }
   } catch (error) {

@@ -90,9 +90,7 @@ describe("Test APIs", () => {
   });
 
   it("Should test that GET /:productId with a not valid id to return 404", async () => {
-    // const product = await client.get("products/12345445723421321");
-    await client.get("/products/12345678912345678912345").expect(404);
-    // expect(product).toEqual(404);
+    await client.get("/products/123456789123456789123456").expect(404);
   });
 
   it("Should test that PUT /:productId ", async () => {
